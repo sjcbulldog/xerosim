@@ -58,8 +58,6 @@ protected:
 	}
 
 private:
-
-private:
 	bool processJSONFile(QFile& file);
 
 private:

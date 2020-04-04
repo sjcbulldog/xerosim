@@ -80,7 +80,8 @@
     <PostBuildEvent>
       <Command>mkdir $(OutDir)fields
 copy $(SolutionDir)fields\*.* $(OutDir)fields\
-copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Command>
+copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)
+copy  $(SolutionDir)images\*.png $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -89,7 +90,7 @@ copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Co
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
-      <AdditionalIncludeDirectories>$(Qt_INCLUDEPATH_);$(SolutionDir)external/wpi/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(Qt_INCLUDEPATH_);$(SolutionDir)external/wpi/include;.\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -102,11 +103,13 @@ copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Co
     <PostBuildEvent>
       <Command>mkdir $(OutDir)fields
 copy $(SolutionDir)fields\*.* $(OutDir)fields\
-copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Command>
+copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)
+copy  $(SolutionDir)images\*.png $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConfigDialog.cpp" />
+    <ClCompile Include="ConveyorWidget.cpp" />
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
@@ -115,6 +118,7 @@ copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Co
     <ClCompile Include="Pose2d.cpp" />
     <ClCompile Include="Rotation2d.cpp" />
     <ClCompile Include="Translation2d.cpp" />
+    <ClCompile Include="TurretWidget.cpp" />
     <ClCompile Include="Twist2d.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
     <ClCompile Include="XeroSimDisplay.cpp" />
@@ -129,6 +133,7 @@ copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Co
     <QtMoc Include="PathFieldView.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="ConveyorWidget.h" />
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Pose2d.h" />
@@ -136,6 +141,7 @@ copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)</Co
     <ClInclude Include="Rotation2d.h" />
     <ClInclude Include="SubsystemData.h" />
     <ClInclude Include="Translation2d.h" />
+    <QtMoc Include="TurretWidget.h" />
     <ClInclude Include="Twist2d.h" />
     <ClInclude Include="UnitConverter.h" />
     <QtMoc Include="ConfigDialog.h" />

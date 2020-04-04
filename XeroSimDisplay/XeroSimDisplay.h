@@ -3,6 +3,8 @@
 #include <QtWidgets/QMainWindow>
 #include "GameFieldManager.h"
 #include "PathFieldView.h"
+#include "TurretWidget.h"
+#include "ConveyorWidget.h"
 #include "SubsystemData.h"
 #include <QSplitter>
 #include <QTextEdit>
@@ -71,27 +73,13 @@ private:
 	QSplitter* top_bottom_spliter_;
 	QSplitter* left_right_splitter_;
 	PathFieldView* field_view_;
-	QTextEdit* logger_;
-	QTreeWidget* subsystems_;
+	TurretWidget* turret_view_;
+	ConveyorWidget* conveyor_view_;
 
-	QMenu* run_;
 	QMenu* field_;
 	QActionGroup* field_group_;
 
 	QTimer *timer_;
-
-	QMetaObject::Connection rdstdout;
-	QMetaObject::Connection rdstderr;
-	QMetaObject::Connection procstarted;
-	QMetaObject::Connection procfinished;
-	QMetaObject::Connection erroroccurred;
-
-	std::map<std::string, std::shared_ptr<SubsystemData>> subsystem_data_;
-
-	std::mutex data_lock_;
-
-	std::chrono::high_resolution_clock::time_point last_robot_update_;
-	std::chrono::high_resolution_clock::time_point last_subsystem_update_;
 
 	std::shared_ptr<nt::NetworkTable> table_;
 };

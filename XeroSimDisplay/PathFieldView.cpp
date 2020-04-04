@@ -205,8 +205,6 @@ void PathFieldView::drawRobot(QPainter& paint)
 	mm.translate(robot_x_, robot_y_);
 	mm.rotate(robot_angle_);
 
-	qDebug() << "robot angle " << robot_angle_;
-
 	double rl = 37.5;
 	double rw = 34.5;
 

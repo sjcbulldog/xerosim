@@ -61,6 +61,12 @@
     <ClCompile Include="UnitConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ConveyorWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TurretWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="XeroSimDisplay.h">
@@ -70,6 +76,12 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ConfigDialog.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ConveyorWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="TurretWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
