@@ -5,3 +5,4 @@
 docs
 **/*.o
 /*/GeneratedFiles
+installer/xerosim*.exe

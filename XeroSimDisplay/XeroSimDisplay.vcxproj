@@ -54,7 +54,7 @@
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64</QtInstall>
+    <QtInstall>msvc2019_64</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -78,10 +78,12 @@
       <AdditionalDependencies>$(Qt_LIBS_);ntcored.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)fields
+      <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(SolutionDir)fields\*.* $(OutDir)fields\
 copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)
-copy  $(SolutionDir)images\*.png $(OutDir)</Command>
+copy  $(SolutionDir)images\*.png $(OutDir)
+copy $(SolutionDir)installer\VC_redist.x64.exe $(OutDir)
+$(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -101,10 +103,12 @@ copy  $(SolutionDir)images\*.png $(OutDir)</Command>
       <AdditionalDependencies>$(Qt_LIBS_);ntcore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir $(OutDir)fields
+      <Command>if not exist "$(OutDir)fields" mkdir $(OutDir)fields
 copy $(SolutionDir)fields\*.* $(OutDir)fields\
 copy $(SolutionDir)external\wpi\windows\bin\$(Configuration)\*.dll $(OutDir)
-copy  $(SolutionDir)images\*.png $(OutDir)</Command>
+copy  $(SolutionDir)images\*.png $(OutDir)
+copy $(SolutionDir)installer\VC_redist.x64.exe $(OutDir)
+$(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -137,6 +141,7 @@ copy  $(SolutionDir)images\*.png $(OutDir)</Command>
     <ClInclude Include="ManagerBase.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Pose2d.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RobotParams.h" />
     <ClInclude Include="Rotation2d.h" />
     <ClInclude Include="SubsystemData.h" />
@@ -150,6 +155,12 @@ copy  $(SolutionDir)images\*.png $(OutDir)</Command>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="ConfigDialog.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
