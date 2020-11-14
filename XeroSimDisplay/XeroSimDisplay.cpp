@@ -169,6 +169,9 @@ void XeroSimDisplay::timerProc()
 	maxpos = conveyor->GetNumber("MaxConveyorPosition", 0.0);
 	conveyor_view_->setDimensions(minpos, maxpos);
 
+	double fired = conveyor->GetNumber("Fired", 0.0);
+	conveyor_view_->setFired(fired);
+
 	char ch = 'A';
 
 	while (true) {

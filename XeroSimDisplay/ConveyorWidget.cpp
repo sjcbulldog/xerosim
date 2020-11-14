@@ -17,23 +17,7 @@ ConveyorWidget::ConveyorWidget(QWidget *parent) : QWidget(parent)
 	minpos_ = 0.0;
 	maxpos_ = 0.0;
 
-#ifdef NOTYET
-	//
-	// For debugging
-	//
-	ready_ = true;
-
-
-	setSensorPosition(0, 0.0);
-	setSensorPosition(1, 4.0);
-	setSensorPosition(2, 3.0);
-	setSensorPosition(3, 31.0);
-
-	setSensorState(0, true);
-	setSensorState(1, false);
-	setSensorState(2, true);
-	setSensorState(3, false);
-#endif
+	fired_ = 0;
 }
 
 ConveyorWidget::~ConveyorWidget()
@@ -143,6 +127,13 @@ void ConveyorWidget::paintEvent(QPaintEvent* ev)
 			}
 		}
 	}
+
+	p.setBrush(QColor(0, 0, 0, 255));
+	p.setPen(QColor(0, 0, 0, 255));
+	p1 = worldToWindow(QPointF(total / 2, (BallDiameter + WallThickness) / 2));
+	QString str = "Launched " + QString::number(fired_);
+	QPointF p3(p1.x() - fm.horizontalAdvance(str) / 2.0, p1.y() + fm.height());
+	p.drawText(p3, str);
 }
 
 void ConveyorWidget::drawBall(QPainter &p, double pos) 

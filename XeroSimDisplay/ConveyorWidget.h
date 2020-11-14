@@ -11,6 +11,10 @@ public:
 	ConveyorWidget(QWidget *parent = Q_NULLPTR);
 	~ConveyorWidget();
 
+	void setFired(int fired) {
+		fired_ = fired;
+	}
+
 	void setSensorPosition(int i, double pos) {
 		if (i >= sensor_pos_.size())
 			sensor_pos_.resize(i + 1);
@@ -85,6 +89,7 @@ private:
 	std::vector<bool> sensor_state_;
 	std::vector<double> ball_pos_;
 	std::vector<bool> ball_present_;
+	int fired_;
 
 	double minpos_;
 	double maxpos_;
