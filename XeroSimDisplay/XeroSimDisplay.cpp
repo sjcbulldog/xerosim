@@ -12,7 +12,7 @@
 
 XeroSimDisplay::XeroSimDisplay(GameFieldManager &fields, QWidget *parent) : QMainWindow(parent), fields_(fields)
 {
-	std::string nttable_name = "XeroSim";
+	std::string nttable_name = "/";
 	fields_.initialize();
 
 	createWindows();
@@ -34,24 +34,6 @@ XeroSimDisplay::XeroSimDisplay(GameFieldManager &fields, QWidget *parent) : QMai
 	nt::NetworkTableInstance inst = nt::NetworkTableInstance::GetDefault();
 	inst.StartClient("127.0.0.1");
 	table_ = inst.GetTable(nttable_name.c_str());
-
-	if (settings_.contains("leftright"))
-	{
-		QList<QVariant> stored = settings_.value("leftright").toList();
-		QList<int> sizes;
-		for (const QVariant& v : stored)
-			sizes.push_back(v.toInt());
-		left_right_splitter_->setSizes(sizes);
-	}
-
-	if (settings_.contains("topbottom"))
-	{
-		QList<QVariant> stored = settings_.value("topbottom").toList();
-		QList<int> sizes;
-		for (const QVariant& v : stored)
-			sizes.push_back(v.toInt());
-		top_bottom_spliter_->setSizes(sizes);
-	}
 }
 
 XeroSimDisplay::~XeroSimDisplay()
@@ -63,16 +45,6 @@ void XeroSimDisplay::closeEvent(QCloseEvent* ev)
 	settings_.setValue("GEOMETERY", saveGeometry());
 	settings_.setValue("STATE", saveState());
 	QMainWindow::closeEvent(ev);
-
-	QList<QVariant> stored;
-	for (int size : left_right_splitter_->sizes())
-		stored.push_back(QVariant(size));
-	settings_.setValue("leftright", stored);
-
-	stored.clear();
-	for (int size : top_bottom_spliter_->sizes())
-		stored.push_back(QVariant(size));
-	settings_.setValue("topbottom", stored);
 }
 
 void XeroSimDisplay::setField(const std::string& name)
@@ -94,22 +66,8 @@ void XeroSimDisplay::setField(const std::string& name)
 
 void XeroSimDisplay::createWindows()
 {
-	left_right_splitter_ = new QSplitter();
-	left_right_splitter_->setOrientation(Qt::Orientation::Vertical);
-	setCentralWidget(left_right_splitter_);
-
-	field_view_ = new PathFieldView(left_right_splitter_);
-	left_right_splitter_->addWidget(field_view_);
-
-	top_bottom_spliter_ = new QSplitter(top_bottom_spliter_);
-	top_bottom_spliter_->setOrientation(Qt::Orientation::Horizontal);
-	left_right_splitter_->addWidget(top_bottom_spliter_);
-
-	turret_view_ = new TurretWidget(top_bottom_spliter_);
-	top_bottom_spliter_->addWidget(turret_view_);
-
-	conveyor_view_ = new ConveyorWidget(top_bottom_spliter_);
-	top_bottom_spliter_->addWidget(conveyor_view_);
+	field_view_ = new PathFieldView();
+	setCentralWidget(field_view_);
 
 	if (settings_.contains("GEOMETRY"))
 		restoreGeometry(settings_.value("GEOMETRY").toByteArray());
@@ -144,72 +102,23 @@ void XeroSimDisplay::newFieldSelected(const std::string &fieldname)
 
 void XeroSimDisplay::timerProc()
 {
-	double xpos, ypos, angle;
+	double xpos, ypos, angle, t;
 	std::string txt;
 	bool ready = false;
 
-	auto tankdrive = table_->GetSubTable("tankdrive");
-	xpos = tankdrive->GetNumber("xpos", 0.0);
-	ypos = tankdrive->GetNumber("ypos", 0.0);
-	angle = tankdrive->GetNumber("angle", 0.0);
-	txt = tankdrive->GetString("text", "#");
+	auto tankdrive = table_->GetSubTable("SmartDashboard");
 
-	field_view_->setRobotPosition(xpos, ypos, angle);
-	field_view_->setRobotText(txt.c_str());
+	t = tankdrive->GetNumber("db-trk-t", RobotTracking::TimeToken);
+	xpos = tankdrive->GetNumber("db-trk-x", 0.0);
+	ypos = tankdrive->GetNumber("db-trk-y", 0.0);
+	angle = tankdrive->GetNumber("db-trk-a", 0.0);
+	field_view_->addTrackPosition(t, xero::paths::Pose2d(xpos, ypos, xero::paths::Rotation2d::fromDegrees(angle)));
 
-	auto turret = table_->GetSubTable("turret");
-	angle = turret->GetNumber("angle", 0.0);
-	turret_view_->setAngle(angle);
+	t = tankdrive->GetNumber("db-path-t", RobotTracking::TimeToken);
+	xpos = tankdrive->GetNumber("db-path-x", 0.0);
+	ypos = tankdrive->GetNumber("db-path-y", 0.0);
+	angle = tankdrive->GetNumber("db-path-a", 0.0);
+	field_view_->addPathPosition(t, xero::paths::Pose2d(xpos, ypos, xero::paths::Rotation2d::fromDegrees(angle)));
 
-	auto conveyor = table_->GetSubTable("conveyor");
-
-	double minpos, maxpos;
-
-	minpos = conveyor->GetNumber("MinConveyorPosition", 0.0);
-	maxpos = conveyor->GetNumber("MaxConveyorPosition", 0.0);
-	conveyor_view_->setDimensions(minpos, maxpos);
-
-	double fired = conveyor->GetNumber("Fired", 0.0);
-	conveyor_view_->setFired(fired);
-
-	char ch = 'A';
-
-	while (true) {
-		std::string str = "Sensor";
-		str += ch;
-		auto senstab = conveyor->GetSubTable(str);
-
-		if (!senstab->ContainsKey("position"))
-			break;
-
-		double pos = senstab->GetNumber("position", 0.0);
-		conveyor_view_->setSensorPosition(ch - 'A', pos);
-
-		bool b = senstab->GetBoolean("state", false);
-		conveyor_view_->setSensorState(ch - 'A', b);
-
-		ch++;
-	}
-
-	int index = 1;
-	while (true) {
-		std::string str = std::to_string(index);
-		auto balltab = conveyor->GetSubTable(str);
-	
-		if (!balltab->ContainsKey("position"))
-			break;
-
-		double pos = balltab->GetNumber("position", 0.0);
-		conveyor_view_->setBallPosition(index, pos);
-
-		bool b = balltab->GetBoolean("present", false);
-		conveyor_view_->setBallPresent(index, b);
-
-		ready = true;
-
-		index++;
-	}
-
-	if (ready)
-		conveyor_view_->setReady();
+	field_view_->update();
 }

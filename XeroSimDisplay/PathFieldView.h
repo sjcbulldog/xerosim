@@ -16,11 +16,13 @@
 #pragma once
 
 #include "GameField.h"
+#include "RobotTracking.h"
 #include <RobotParams.h>
 #include <Pose2d.h>
 #include <QWidget>
 #include <QPixmap>
 #include <QTransform>
+#include <QDebug>
 #include <memory>
 
 class PathFieldView : public QWidget
@@ -33,10 +35,6 @@ public:
 	PathFieldView(QWidget* parent = Q_NULLPTR);
 	virtual ~PathFieldView();
 
-	void setRobotText(QString str) {
-		robot_text_ = str;
-	}
-
 	void setField(std::shared_ptr<GameField> field);
 	void setUnits(const std::string& units);
 
@@ -47,11 +45,12 @@ public:
 
 	void doPaint(QPainter& paint, bool printing = false);
 
-	void setRobotPosition(double x, double y, double angle) {
-		robot_x_ = x;
-		robot_y_ = y;
-		robot_angle_ = angle;
-		update();
+	void addTrackPosition(double t, const xero::paths::Pose2d &pose) {
+		track_.add(t, pose);
+	}
+
+	void addPathPosition(double t, const xero::paths::Pose2d& pose) {
+		path_.add(t, pose);
 	}
 
 signals:
@@ -69,21 +68,10 @@ protected:
 	QSize sizeHint() const override;
 
 private:
-	void drawRobot(QPainter& paint);
+	void drawPath(QPainter& p, QColor c, const RobotTracking &track);
 
 private:
 	void emitMouseMoved(xero::paths::Translation2d pos);
-	void emitWaypointSelected(size_t which);
-	void emitWaypointStartMoving(size_t which);
-	void emitWaypointMoving(size_t which);
-	void emitWaypointEndMoving(size_t which);
-	void emitWaypointDeleted();
-	void emitWaypointInserted();
-
-	void undo();
-
-	void moveWaypoint(bool shift, int dx, int dy);
-	void rotateWaypoint(bool shift, int dir);
 
 	std::vector<QPointF> transformPoints(QTransform& trans, const std::vector<QPointF>& points);
 	void createTransforms();
@@ -96,9 +84,6 @@ private:
 	QTransform window_to_world_;
 	std::string units_;
 
-	double robot_x_;
-	double robot_y_;
-	double robot_angle_;
-
-	QString robot_text_;
+	RobotTracking track_;
+	RobotTracking path_;
 };

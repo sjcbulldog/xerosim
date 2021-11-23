@@ -61,10 +61,7 @@
     <ClCompile Include="UnitConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConveyorWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TurretWidget.cpp">
+    <ClCompile Include="BaseWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,10 +75,7 @@
     <QtMoc Include="ConfigDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ConveyorWidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="TurretWidget.h">
+    <QtMoc Include="BaseWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -125,6 +119,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RobotTracking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

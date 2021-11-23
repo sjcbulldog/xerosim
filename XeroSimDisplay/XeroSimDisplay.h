@@ -3,8 +3,6 @@
 #include <QtWidgets/QMainWindow>
 #include "GameFieldManager.h"
 #include "PathFieldView.h"
-#include "TurretWidget.h"
-#include "ConveyorWidget.h"
 #include "SubsystemData.h"
 #include <QSplitter>
 #include <QTextEdit>
@@ -65,16 +63,7 @@ private:
 	QSettings settings_;
 	QString current_field_;
 
-	double robot_x_;
-	double robot_y_;
-	double robot_angle_;
-	QString robot_text_;
-
-	QSplitter* top_bottom_spliter_;
-	QSplitter* left_right_splitter_;
 	PathFieldView* field_view_;
-	TurretWidget* turret_view_;
-	ConveyorWidget* conveyor_view_;
 
 	QMenu* field_;
 	QActionGroup* field_group_;

@@ -23,21 +23,16 @@
 #include <QCoreApplication>
 #include <QFontMetricsF>
 #include <cmath>
+#include <cassert>
 
 using namespace xero::paths;
 
-PathFieldView::PathFieldView(QWidget* parent) : QWidget(parent)
+PathFieldView::PathFieldView(QWidget* parent) : QWidget(parent), track_("robot"), path_("path")
 {
 	units_ = "in";
 	setMouseTracking(true);
 	setFocusPolicy(Qt::ClickFocus);
 	image_scale_ = 1.0;
-
-	robot_x_ = 0.0;
-	robot_y_ = 0.0;
-	robot_angle_ = 0.0;
-
-	robot_text_ = "????";
 }
 
 PathFieldView::~PathFieldView()
@@ -77,8 +72,10 @@ void PathFieldView::doPaint(QPainter& paint, bool printing)
 	QRectF rect(0.0f, 0.0f, field_image_.width() * image_scale_, field_image_.height() * image_scale_);
 	paint.drawImage(rect, field_image_);
 
-	drawRobot(paint);
+	drawPath(paint, QColor(255, 0, 0), track_);
+	drawPath(paint, QColor(0, 0, 255), path_);
 }
+
 
 void PathFieldView::emitMouseMoved(Translation2d pos)
 {
@@ -199,74 +196,25 @@ std::vector<QPointF> PathFieldView::windowToWorld(const std::vector<QPointF>& po
 	return transformPoints(window_to_world_, points);
 }
 
-void PathFieldView::drawRobot(QPainter& paint)
+
+void PathFieldView::drawPath(QPainter &p, QColor c, const RobotTracking &track)
 {
-	QTransform mm;
-	mm.translate(robot_x_, robot_y_);
-	mm.rotate(robot_angle_);
+	const int cross = 6;
+	QPointF p1, p2;
 
-	double rl = 37.5;
-	double rw = 34.5;
+	QPen pen(c);
+	pen.setWidth(2);
+	p.setPen(pen);
 
-	std::vector<QPointF> robot =
-	{
-		{ rl / 2.0, rw / 2.0 },
-		{ -rl / 2.0, rw / 2.0 },
-		{ -rl / 2.0, -rw / 2.0 },
-		{ rl / 2.0, -rw / 2.0 },
-	};
+	for (int i = 0; i < track.size(); i++) {
+		QPointF winpos = worldToWindow(QPointF(track.pose(i).getTranslation().getX(), track.pose(i).getTranslation().getY()));
 
-	std::vector<QPointF> wheel =
-	{
-		{ 0, 0 },
-		{ rl / 4.0, 0.0 },
-		{ rl / 4.0, rw / 8.0},
-		{ 0.0, rw / 8.0},
-	};
+		p1 = QPointF(winpos.x() - cross, winpos.y());
+		p2 = QPointF(winpos.x() + cross, winpos.y());
+		p.drawLine(p1, p2);
 
-	paint.setBrush(Qt::BrushStyle::NoBrush);
-	QPen pen = QPen(QColor(0x00, 0x00, 0x00, 0xff));
-	pen.setWidthF(2.0f);
-	paint.setPen(pen);
-
-	std::vector<QPointF> robotpts = worldToWindow(transformPoints(mm, robot));
-	paint.drawPolygon(&robotpts[0], static_cast<int>(robotpts.size()));
-
-	paint.setBrush(QBrush(QColor(0, 0, 0, 0xff)));
-
-	std::vector<QPointF> drawpts;
-	QTransform trans;
-	trans.translate(rl / 4.0, rw / 2.0);
-	drawpts = transformPoints(trans, wheel);
-	drawpts = worldToWindow(transformPoints(mm, drawpts));
-	paint.drawPolygon(&drawpts[0], static_cast<int>(drawpts.size()));
-
-	trans = QTransform();
-	trans.translate(rl / 4.0, -rw / 2.0 - rw / 8.0);
-	drawpts = transformPoints(trans, wheel);
-	drawpts = worldToWindow(transformPoints(mm, drawpts));
-	paint.drawPolygon(&drawpts[0], static_cast<int>(drawpts.size()));
-
-	trans = QTransform();
-	trans.translate(-rl / 2.0, rw / 2.0);
-	drawpts = transformPoints(trans, wheel);
-	drawpts = worldToWindow(transformPoints(mm, drawpts));
-	paint.drawPolygon(&drawpts[0], static_cast<int>(drawpts.size()));
-
-	trans = QTransform();
-	trans.translate(-rl / 2.0, -rw / 2.0 - rw / 8.0);
-	drawpts = transformPoints(trans, wheel);
-	drawpts = worldToWindow(transformPoints(mm, drawpts));
-	paint.drawPolygon(&drawpts[0], static_cast<int>(drawpts.size()));
-
-	paint.setBrush(Qt::BrushStyle::NoBrush);
-	pen = QPen(QColor(0xFF, 0xFF, 0xFF, 0xff));
-	paint.setPen(pen);
-
-	QPointF pt;
-	pt = mm.map(pt);
-	pt = worldToWindow(pt);
-	QFontMetricsF fm(paint.font());
-	pt.setX(pt.x() - fm.horizontalAdvance(robot_text_) / 2);
-	paint.drawText(pt, robot_text_);
+		p1 = QPointF(winpos.x(), winpos.y() - cross);
+		p2 = QPointF(winpos.x(), winpos.y() + cross);
+		p.drawLine(p1, p2);
+	}
 }
