@@ -44,11 +44,7 @@ public:
 			// Time went backwards, we are starting over.  Clear the current data.
 			//
 			data_.clear();
-			qDebug() << "RobotTracking(" << name_ << "):cleared data";
 		}
-
-		qDebug() << "RobotTracking(" << name_ << "): added " << t << " " << pose.getTranslation().getX() << " "
-			<< pose.getTranslation().getY() << " " << pose.getRotation().toDegrees();
 		data_.push_back(Pose2dAtTime(t, pose));
 
 		current_time_ = t;

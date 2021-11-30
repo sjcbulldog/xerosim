@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QtWidgets/QMainWindow>
+#include "SubsystemWidget.h"
 #include "GameFieldManager.h"
 #include "PathFieldView.h"
 #include "SubsystemData.h"
@@ -11,6 +11,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QTreeWidget>
+#include <QtWidgets/QMainWindow>
 #include <memory>
 #include <thread>
 #include <map>
@@ -46,10 +47,10 @@ public:
 	virtual ~XeroSimDisplay();
 
 protected:
-	void setField(const std::string& field);
-	void closeEvent(QCloseEvent* ev);
+	void closeEvent(QCloseEvent* ev) override;
 
 private:
+	void setField(const std::string& field);
 	void newFieldSelected(const std::string& fieldname);
 
 private:
@@ -59,11 +60,18 @@ private:
 	void timerProc();
 
 private:
+	static constexpr const char* GeometrySettings = "geometry";
+	static constexpr const char* WindowStateSettings = "windowstate";
+	static constexpr const char* SplitterSettings = "splitter";
+
+private:
 	GameFieldManager& fields_;
 	QSettings settings_;
 	QString current_field_;
 
+	QSplitter* left_right_;
 	PathFieldView* field_view_;
+	SubsystemWidget* subsystem_view_;
 
 	QMenu* field_;
 	QActionGroup* field_group_;

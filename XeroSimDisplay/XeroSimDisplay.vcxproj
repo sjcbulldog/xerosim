@@ -113,7 +113,6 @@ $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseWidget.cpp" />
-    <ClCompile Include="ConfigDialog.cpp" />
     <ClCompile Include="GameFieldManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ManagerBase.cpp" />
@@ -121,6 +120,8 @@ $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe</Command>
     <ClCompile Include="PathFieldView.cpp" />
     <ClCompile Include="Pose2d.cpp" />
     <ClCompile Include="Rotation2d.cpp" />
+    <ClCompile Include="SubsystemDisplayWidget.cpp" />
+    <ClCompile Include="SubsystemWidget.cpp" />
     <ClCompile Include="Translation2d.cpp" />
     <ClCompile Include="Twist2d.cpp" />
     <ClCompile Include="UnitConverter.cpp" />
@@ -145,21 +146,22 @@ $(QTDIR)\bin\windeployqt $(OutDir)$(ProjectName).exe</Command>
     <ClInclude Include="RobotTracking.h" />
     <ClInclude Include="Rotation2d.h" />
     <ClInclude Include="SubsystemData.h" />
+    <QtMoc Include="SubsystemWidget.h" />
+    <QtMoc Include="SubsystemDisplayWidget.h" />
     <ClInclude Include="Translation2d.h" />
     <ClInclude Include="Twist2d.h" />
     <ClInclude Include="UnitConverter.h" />
-    <QtMoc Include="ConfigDialog.h" />
     <ClInclude Include="GameField.h" />
     <ClInclude Include="GameFieldManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtUic Include="ConfigDialog.ui" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="SubsystemDisplayWidget.ui" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

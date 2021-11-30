@@ -37,9 +37,6 @@
     <ClCompile Include="GameFieldManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ManagerBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -64,6 +61,12 @@
     <ClCompile Include="BaseWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SubsystemWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SubsystemDisplayWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="XeroSimDisplay.h">
@@ -72,10 +75,13 @@
     <QtMoc Include="PathFieldView.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="ConfigDialog.h">
+    <QtMoc Include="BaseWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="BaseWidget.h">
+    <QtMoc Include="SubsystemWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SubsystemDisplayWidget.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -126,11 +132,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="ConfigDialog.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Resource.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
@@ -139,5 +140,10 @@
     <Image Include="icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="SubsystemDisplayWidget.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>

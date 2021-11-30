@@ -197,6 +197,7 @@ std::vector<QPointF> PathFieldView::windowToWorld(const std::vector<QPointF>& po
 }
 
 
+static int count = 0;
 void PathFieldView::drawPath(QPainter &p, QColor c, const RobotTracking &track)
 {
 	const int cross = 6;
@@ -205,6 +206,8 @@ void PathFieldView::drawPath(QPainter &p, QColor c, const RobotTracking &track)
 	QPen pen(c);
 	pen.setWidth(2);
 	p.setPen(pen);
+
+	count++;
 
 	for (int i = 0; i < track.size(); i++) {
 		QPointF winpos = worldToWindow(QPointF(track.pose(i).getTranslation().getX(), track.pose(i).getTranslation().getY()));

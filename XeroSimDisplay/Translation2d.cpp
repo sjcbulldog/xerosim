@@ -1,4 +1,5 @@
 #include "Translation2d.h"
+#include "Rotation2d.h"
 #include <cmath>
 #include <algorithm>
 
@@ -37,10 +38,6 @@ namespace xero {
 			y_ = magnitude * rot.getSin();
 		}
 
-		Translation2d::~Translation2d()
-		{
-		}
-		
 		Rotation2d Translation2d::toRotation() const
 		{
 			double angle = std::atan2(y_, x_);

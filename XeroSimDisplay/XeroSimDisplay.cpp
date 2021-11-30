@@ -1,5 +1,4 @@
 #include "XeroSimDisplay.h"
-#include "ConfigDialog.h"
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
@@ -17,6 +16,21 @@ XeroSimDisplay::XeroSimDisplay(GameFieldManager &fields, QWidget *parent) : QMai
 
 	createWindows();
 	createMenus();
+
+	if (settings_.contains(GeometrySettings))
+		restoreGeometry(settings_.value(GeometrySettings).toByteArray());
+
+	if (settings_.contains(WindowStateSettings))
+		restoreState(settings_.value(WindowStateSettings).toByteArray());
+
+	if (settings_.contains(SplitterSettings))
+	{
+		QList<QVariant> stored = settings_.value(SplitterSettings).toList();
+		QList<int> sizes;
+		for (const QVariant& v : stored)
+			sizes.push_back(v.toInt());
+		left_right_->setSizes(sizes);
+	}
 
 	std::string name = "Empty Field";
 	if (settings_.contains("FIELD"))
@@ -42,8 +56,14 @@ XeroSimDisplay::~XeroSimDisplay()
 
 void XeroSimDisplay::closeEvent(QCloseEvent* ev)
 {
-	settings_.setValue("GEOMETERY", saveGeometry());
-	settings_.setValue("STATE", saveState());
+	settings_.setValue(GeometrySettings, saveGeometry());
+	settings_.setValue(WindowStateSettings, saveState());
+
+	QList<QVariant> stored;
+	for (int size : left_right_->sizes())
+		stored.push_back(QVariant(size));
+	settings_.setValue(SplitterSettings, stored);
+
 	QMainWindow::closeEvent(ev);
 }
 
@@ -66,8 +86,14 @@ void XeroSimDisplay::setField(const std::string& name)
 
 void XeroSimDisplay::createWindows()
 {
+	left_right_ = new QSplitter(Qt::Horizontal);
+	setCentralWidget(left_right_);
+
 	field_view_ = new PathFieldView();
-	setCentralWidget(field_view_);
+	left_right_->addWidget(field_view_);
+
+	subsystem_view_ = new SubsystemWidget(left_right_);
+	left_right_->addWidget(subsystem_view_);
 
 	if (settings_.contains("GEOMETRY"))
 		restoreGeometry(settings_.value("GEOMETRY").toByteArray());
@@ -102,23 +128,39 @@ void XeroSimDisplay::newFieldSelected(const std::string &fieldname)
 
 void XeroSimDisplay::timerProc()
 {
-	double xpos, ypos, angle, t;
+	static std::string nameend = "-subsystem";
+
+	double txpos, typos, tangle, tt;
+	double pxpos, pypos, pangle, pt;
 	std::string txt;
 	bool ready = false;
 
-	auto tankdrive = table_->GetSubTable("SmartDashboard");
+	auto smart = table_->GetSubTable("SmartDashboard");
 
-	t = tankdrive->GetNumber("db-trk-t", RobotTracking::TimeToken);
-	xpos = tankdrive->GetNumber("db-trk-x", 0.0);
-	ypos = tankdrive->GetNumber("db-trk-y", 0.0);
-	angle = tankdrive->GetNumber("db-trk-a", 0.0);
-	field_view_->addTrackPosition(t, xero::paths::Pose2d(xpos, ypos, xero::paths::Rotation2d::fromDegrees(angle)));
+	tt = smart->GetNumber("db-trk-t", RobotTracking::TimeToken);
+	txpos = smart->GetNumber("db-trk-x", 0.0);
+	typos = smart->GetNumber("db-trk-y", 0.0);
+	tangle = smart->GetNumber("db-trk-a", 0.0);
+	field_view_->addTrackPosition(tt, xero::paths::Pose2d(txpos, typos, xero::paths::Rotation2d::fromDegrees(tangle)));
 
-	t = tankdrive->GetNumber("db-path-t", RobotTracking::TimeToken);
-	xpos = tankdrive->GetNumber("db-path-x", 0.0);
-	ypos = tankdrive->GetNumber("db-path-y", 0.0);
-	angle = tankdrive->GetNumber("db-path-a", 0.0);
-	field_view_->addPathPosition(t, xero::paths::Pose2d(xpos, ypos, xero::paths::Rotation2d::fromDegrees(angle)));
+	pt = smart->GetNumber("db-path-t", RobotTracking::TimeToken);
+	pxpos = smart->GetNumber("db-path-x", 0.0);
+	pypos = smart->GetNumber("db-path-y", 0.0);
+	pangle = smart->GetNumber("db-path-a", 0.0);
+	field_view_->addPathPosition(pt, xero::paths::Pose2d(pxpos, pypos, xero::paths::Rotation2d::fromDegrees(pangle)));
+
+	std::vector<std::string> keys = smart->GetKeys();
+	for (const std::string& key : keys) {
+		if (key.length() > nameend.length() && key.substr(key.length() - nameend.length()) == nameend)
+		{
+			std::string name = key.substr(0, key.length() - nameend.length());
+			if (smart->ContainsKey(name + "-power"))
+			{
+				double v = smart->GetNumber(name + "-power", 0.0);
+				subsystem_view_->updateSubsystem(name, v);
+			}
+		}
+	}
 
 	field_view_->update();
 }
